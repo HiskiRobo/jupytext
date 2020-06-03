@@ -39,6 +39,7 @@ from .myst import (
     myst_extensions,
     matches_mystnb,
 )
+from .version import __version__
 
 
 class JupytextFormatError(ValueError):
@@ -421,15 +422,28 @@ def check_file_version(notebook, source_path, outputs_path):
     if (fmt.min_readable_version_number or current) <= version <= current:
         return
 
+    jupytext_version_in_file = (
+        notebook.metadata.get("jupytext", {})
+        .get("text_representation", {})
+        .get("jupytext_version", "N/A")
+    )
+
     raise JupytextFormatError(
-        "File {} is in format/version={}/{} (current version is {}). "
+        "The text file {} (generated with Jupytext {}) is in the {} format in version {}, "
+        "but Jupytext {} installed at {} can read the {} format in versions {} to {}. "
         "It would not be safe to override the source of {} with that file. "
-        "Please remove one or the other file.".format(
+        "Please either install Jupytext {}, or remove one or the other file.".format(
             os.path.basename(source_path),
+            jupytext_version_in_file,
             format_name,
             version,
+            __version__,
+            os.path.dirname(os.path.dirname(__file__)),
+            format_name,
+            fmt.min_readable_version_number or current,
             current,
             os.path.basename(outputs_path),
+            jupytext_version_in_file,
         )
     )
 

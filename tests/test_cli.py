@@ -257,8 +257,17 @@ def test_combine_lower_version_raises(tmpdir):
         fp.write(
             """# ---
 # jupyter:
-#   jupytext_formats: ipynb,py
-#   jupytext_format_version: '0.0'
+#   jupytext:
+#     formats: ipynb,py:light
+#     text_representation:
+#       extension: .py
+#       format_name: light
+#       format_version: '55.4'
+#       jupytext_version: 42.1.1
+#   kernelspec:
+#     display_name: Python 3
+#     language: python
+#     name: python3
 # ---
 
 # New cell
@@ -268,7 +277,10 @@ def test_combine_lower_version_raises(tmpdir):
     nb = new_notebook(metadata={"jupytext_formats": "ipynb,py"})
     write(nb, tmp_ipynb)
 
-    with pytest.raises(ValueError, match="Please remove one or the other file"):
+    with pytest.raises(
+        ValueError,
+        match="Please either install Jupytext 42.1.1, or remove one or the other file.",
+    ):
         jupytext([tmp_nbpy, "--to", "ipynb", "--update"])
 
 
