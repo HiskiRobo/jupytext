@@ -68,3 +68,4 @@ jobs:
           }
       - name: Upload coverage
         uses: codecov/codecov-action@v1
+        if: ${{ os != 'windows-latest' }}
